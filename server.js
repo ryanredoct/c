@@ -10,7 +10,7 @@ const connectionPool = mysql.createPool({
   host: 'database-1.cfwug6u48h26.us-east-1.rds.amazonaws.com',
   port: 3306,
   user: 'admin', // Replace with your database username
-  password: 'YOUR_SECURE_PASSWORD', // Replace with your secure password (avoid hardcoding)
+  password: 'Mdb123Man', // Replace with your secure password (avoid hardcoding)
   database: 'database-1',
   waitForConnections: true,
   connectionLimit: 10,
