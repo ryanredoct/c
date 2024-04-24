@@ -1,14 +1,14 @@
 {
-  "name": "nodejs-graphql-hello-world-server", // Replace with your application name
+  "name": "nodejs-graphql-hello-world-server",
   "version": "1.0.0",
   "description": "Your application description",
   "scripts": {
-    "start": "node server.js" // Replace with your server file name
+    "start": "node server.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.3",
-    "mysql2/promise": "^3.3.6" // Include mysql2/promise dependency
+    "mysql2/promise": "^3.3.6"
   }
 }
 
