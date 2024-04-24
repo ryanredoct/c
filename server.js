@@ -40,7 +40,7 @@ app.post('/insertData', async (req, res) => {
     res.status(200).send('Data inserted successfully');
   } catch (error) {
     console.error('Error inserting data:', error);
-    res.status(500).send('Error inserting data');
+    res.status(500).send(`Error inserting data: ${error.message}`);
   }
 });
 
