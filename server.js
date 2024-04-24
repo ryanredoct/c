@@ -1,7 +1,7 @@
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
-const mysql = require('mysql2/promise'); // Use mysql2
+const mysql = require('mysql2/promise');
 const port = process.env.PORT || 8080;
 const app = express();
 
@@ -16,14 +16,27 @@ const connection = mysql.createPool({
   queueLimit: 0
 });
 
-app.use(bodyParser.json(), cors());
+app.use(bodyParser.urlencoded({ extended: false }), bodyParser.json(), cors());
+
+// Serve the HTML form
+app.get('/', (req, res) => {
+  res.send(`
+    <form action="/insertData" method="post">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name"><br><br>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email"><br><br>
+      <button type="submit">Submit</button>
+    </form>
+  `);
+});
 
 // Route to insert data into the database
 app.post('/insertData', async (req, res) => {
-  const data = req.body;
+  const { name, email } = req.body;
   try {
-    const query = 'INSERT INTO your_table_name SET ?';
-    const [rows, fields] = await connection.execute(query, [data]);
+    const query = 'INSERT INTO your_table_name (name, email) VALUES (?, ?)';
+    await connection.execute(query, [name, email]);
     res.status(200).send('Data inserted successfully');
   } catch (error) {
     console.error('Error inserting data:', error);
@@ -31,12 +44,9 @@ app.post('/insertData', async (req, res) => {
   }
 });
 
-app.get('/', (req, res) => {
-  res.send('Welcome to Node.js API Project');
-});
-
 app.get('/hello', (req, res) => {
   res.send('Hello World!!');
 });
 
 app.listen(port, () => console.log(`Server is up and running on port ${port}`));
+
