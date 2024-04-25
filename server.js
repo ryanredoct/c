@@ -1,18 +1,33 @@
-const bodyParser = require('body-parser')
-const cors = require('cors')
-const express = require('express')
-const port = process.env.PORT||8080
-const app = express()
+const express = require('express');
+const mysql = require('mysql2/promise');
+const app = express();
 
-app.use(bodyParser.json() , cors())
- 
- 
-app.get('/', (req, res) => {
-   res.send('Welcome to Nodejs API Project Ryan')
- })
+// MySQL database connection configuration
+const connectionConfig = {
+  host: 'database-2.cfwug6u48h26.us-east-1.rds.amazonaws.com',
+  user: 'admin',
+  password: 'Mdb123Man',
+  database: 'database-2',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+};
 
- app.get('/hello', (req, res) => {
-   res.send('Hello World!!')
- })
+// Route to test database connectivity
+app.get('/testDatabaseConnection', async (req, res) => {
+  try {
+    const connection = await mysql.createConnection(connectionConfig);
+    await connection.query('SELECT 1');
+    res.status(200).send('Database connection test successful');
+  } catch (error) {
+    console.error('Error testing database connection:', error);
+    res.status(500).send(`Error testing database connection: ${error.message}`);
+  }
+});
 
-app.listen(port, () =>  console.log(`server is up and running ${port}`))
+// Start the server
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log(`Server is up and running on port ${port}`);
+});
+
