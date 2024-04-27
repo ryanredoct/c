@@ -13,15 +13,6 @@ const db = mysql.createConnection({
   database: 'database-1'
 });
 
-db.connect((err) => {
-  if (err) {
-    console.error('Error connecting to the MySQL server:', err);
-    process.exit(1); // Exit if the database connection fails
-  }
-  console.log('Connected to the MySQL server.');
-});
-
-app.use(bodyParser.json(), cors());
 
 app.get('/', (req, res) => {
   res.send('Welcome to Nodejs API Project');
