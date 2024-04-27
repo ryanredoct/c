@@ -1,12 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 const mysql = require('mysql');
 
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080; // App Runner sets this environment variable
 
-// MySQL connection setup
+// Database connection setup
 const db = mysql.createConnection({
   host: 'database-1.cfe82au48n6b.us-west-1.rds.amazonaws.com',
   user: 'admin',
@@ -14,39 +13,38 @@ const db = mysql.createConnection({
   database: 'mydatabase'
 });
 
+// Connect to the database
 db.connect(err => {
   if (err) {
-    return console.error('error connecting: ' + err.stack);
+    console.error('Database connection failed:', err);
+    process.exit(1); // Exit if the database connection fails
   }
-  console.log('connected to database as id ' + db.threadId);
 });
 
-// Middleware
+// Middleware to parse JSON
 app.use(bodyParser.json());
-app.use(cors());
 
-// Routes
+// Welcome route
 app.get('/', (req, res) => {
-  res.send('Welcome to Nodejs API Project');
+  res.send('Welcome to the Node.js App Runner Service');
 });
 
-app.post('/users', (req, res) => {
+// Route to add user
+app.post('/addUser', (req, res) => {
   const { name, age } = req.body;
-  if (!name || !age) {
-    return res.status(400).send('Name and age are required');
-  }
-
   const query = 'INSERT INTO Users (name, age) VALUES (?, ?)';
-  db.query(query, [name, age], (err, results) => {
+  db.query(query, [name, age], (err) => {
     if (err) {
-      console.error('Error inserting data into the database', err);
-      return res.status(500).send('Failed to add user');
+      console.error('Failed to add user:', err);
+      res.status(500).send('Failed to add user');
+      return;
     }
-    res.send('Success');
+    res.send('User added successfully');
   });
 });
 
+// Start the server
 app.listen(port, () => {
-  console.log(`Server is up and running on port ${port}`);
+  console.log(`Server running on port ${port}`);
 });
 
