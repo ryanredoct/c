@@ -1,52 +1,49 @@
-const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const express = require('express');
 const mysql = require('mysql');
-
-const app = express();
 const port = process.env.PORT || 8080;
+const app = express();
 
-// MySQL connection setup
+// Database connection
 const db = mysql.createConnection({
   host: 'database-1.cfe82au48n6b.us-west-1.rds.amazonaws.com',
   user: 'admin',
   password: 'Man123red',
-  database: 'mydatabase'
+  database: 'yourDatabaseName' // Replace with your actual database name
 });
 
-db.connect(err => {
+db.connect((err) => {
   if (err) {
-    console.error('error connecting: ' + err.stack);
-    return;
+    console.error('Error connecting to the MySQL server:', err);
+    process.exit(1); // Exit if the database connection fails
   }
-  console.log('connected to database as id ' + db.threadId);
+  console.log('Connected to the MySQL server.');
 });
 
-// Middleware
-app.use(bodyParser.json());
-app.use(cors());
+app.use(bodyParser.json(), cors());
 
-// Routes
 app.get('/', (req, res) => {
-  res.send('Welcome to Nodejs API Project on AWS App Runner');
+  res.send('Welcome to Nodejs API Project');
 });
 
-app.post('/users', (req, res) => {
-  const { name, age } = req.body;
-  if (!name || !age) {
-    return res.status(400).send('Name and age are required');
-  }
+app.get('/hello', (req, res) => {
+  res.send('Hello World!!');
+});
 
-  const query = 'INSERT INTO Users (name, age) VALUES (?, ?)';
-  db.query(query, [name, age], (err, results) => {
+// Endpoint to add name and age
+app.post('/addPerson', (req, res) => {
+  const sql = 'INSERT INTO people SET ?';
+  const newPerson = { name: req.body.name, age: req.body.age };
+  db.query(sql, newPerson, (err, result) => {
     if (err) {
-      console.error('Error inserting data into the database', err);
-      return res.status(500).send('Failed to add user');
+      console.error('Failed to add person:', err);
+      res.status(500).send('Error adding person');
+      return;
     }
-    res.send('Success');
+    res.send('Person added');
   });
 });
 
-app.listen(port, () => {
-  console.log(`Server is up and running on port ${port}`);
-});
+app.listen(port, () => console.log(`Server is up and running on port ${port}`));
+
