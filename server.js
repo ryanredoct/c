@@ -1,18 +1,69 @@
-const bodyParser = require('body-parser')
-const cors = require('cors')
-const express = require('express')
-const port = process.env.PORT||8080
-const app = express()
+const express = require('express');
+const mysql = require('mysql');
+const bodyParser = require('body-parser');
 
-app.use(bodyParser.json() , cors())
- 
- 
+const app = express();
+const port = process.env.PORT || 8080;
+
+// Setting up the database connection
+const db = mysql.createConnection({
+  host: 'your-database-host', // Replace with your host
+  user: 'your-username', // Replace with your username
+  password: 'your-password', // Replace with your password
+  database: 'your-database-name' // Replace with your database name
+});
+
+db.connect((err) => {
+  if (err) {
+    console.error('Error connecting to database:', err);
+    return;
+  }
+  console.log('Connected to database.');
+});
+
+// Middleware to parse form data
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Route to serve HTML form at root
 app.get('/', (req, res) => {
-   res.send('Welcome to Nodejs API Project')
- })
+  const html = `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Person</title>
+  </head>
+  <body>
+    <h1>Add Person</h1>
+    <form action="/submit" method="post">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required><br><br>
+      <label for="age">Age:</label>
+      <input type="text" id="age" name="age" required><br><br>
+      <input type="submit" value="Submit">
+    </form>
+  </body>
+  </html>
+  `;
+  res.send(html);
+});
 
- app.get('/hello', (req, res) => {
-   res.send('Hello World!!')
- })
+// Route to handle form submission
+app.post('/submit', (req, res) => {
+  const { name, age } = req.body;
+  const sql = 'INSERT INTO people SET ?';
+  db.query(sql, { name, age }, (err, result) => {
+    if (err) {
+      console.error('Failed to add person:', err);
+      res.status(500).send('Failed to add person');
+      return;
+    }
+    res.send('Person added successfully');
+  });
+});
 
-app.listen(port, () =>  console.log(`server is up and running ${port}`))
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
+
