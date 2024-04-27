@@ -10,7 +10,7 @@ const db = mysql.createConnection({
   host: 'database-1.cfe82au48n6b.us-west-1.rds.amazonaws.com',
   user: 'admin',
   password: 'Man123red',
-  database: 'yourDatabaseName' // Replace with your actual database name
+  database: 'database-1'
 });
 
 db.connect((err) => {
