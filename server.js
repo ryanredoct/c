@@ -4,10 +4,10 @@ const app = express();
 
 // MySQL database connection configuration
 const connectionConfig = {
-  host: 'database-2.cfwug6u48h26.us-east-1.rds.amazonaws.com',
+  host: 'database-1.cfe82au48n6b.us-west-1.rds.amazonaws.com',
   user: 'admin',
-  password: 'Mdb123Man',
-  database: 'database-2',
+  password: 'Man123red',
+  database: 'database-1',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
