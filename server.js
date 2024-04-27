@@ -7,10 +7,10 @@ const port = process.env.PORT || 8080;
 
 // Setting up the database connection
 const db = mysql.createConnection({
-  host: 'your-database-host', // Replace with your host
-  user: 'your-username', // Replace with your username
-  password: 'your-password', // Replace with your password
-  database: 'your-database-name' // Replace with your database name
+  host: 'database-1.cfe82au48n6b.us-west-1.rds.amazonaws.comt', 
+  user: 'admin', 
+  password: 'Man123red',
+  database: 'database-1'
 });
 
 db.connect((err) => {
