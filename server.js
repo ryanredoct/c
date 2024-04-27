@@ -1,32 +1,51 @@
 const express = require('express');
-const mysql = require('mysql2/promise');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const mysql = require('mysql');
+
 const app = express();
+const port = 8080;
 
-// MySQL database connection configuration
-const connectionConfig = {
-  host: 'database-2.cfwug6u48h26.us-east-1.rds.amazonaws.com',
+// MySQL connection setup
+const db = mysql.createConnection({
+  host: 'database-1.cfe82au48n6b.us-west-1.rds.amazonaws.com',
   user: 'admin',
-  password: 'Mdb123Man',
-  database: 'database-2',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-};
-
-// Route to test database connectivity
-app.get('/testDatabaseConnection', async (req, res) => {
-  try {
-    const connection = await mysql.createConnection(connectionConfig);
-    await connection.query('SELECT 1');
-    res.status(200).send('Database connection test successful');
-  } catch (error) {
-    console.error('Error testing database connection:', error);
-    res.status(500).send(`Error testing database connection: ${error.message}`);
-  }
+  password: 'Man123red',
+  database: 'mydatabase'
 });
 
-// Start the server
-const port = process.env.PORT || 8080;
+db.connect(err => {
+  if (err) {
+    return console.error('error connecting: ' + err.stack);
+  }
+  console.log('connected to database as id ' + db.threadId);
+});
+
+// Middleware
+app.use(bodyParser.json());
+app.use(cors());
+
+// Routes
+app.get('/', (req, res) => {
+  res.send('Welcome to Nodejs API Project');
+});
+
+app.post('/users', (req, res) => {
+  const { name, age } = req.body;
+  if (!name || !age) {
+    return res.status(400).send('Name and age are required');
+  }
+
+  const query = 'INSERT INTO Users (name, age) VALUES (?, ?)';
+  db.query(query, [name, age], (err, results) => {
+    if (err) {
+      console.error('Error inserting data into the database', err);
+      return res.status(500).send('Failed to add user');
+    }
+    res.send('Success');
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server is up and running on port ${port}`);
 });
